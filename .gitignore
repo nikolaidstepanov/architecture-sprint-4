@@ -172,3 +172,5 @@ cython_debug/
 
 # Drawio
 *.drawio.bkp
+
+.DS_Store
