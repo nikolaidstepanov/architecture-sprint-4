@@ -1,0 +1,25 @@
+@startuml
+
+actor User as Operator
+participant "CRM or MES API" as API
+participant Cache
+database "Shop DB" as DB
+
+== Чтение списка заказов ==
+Operator -> API : GET /orders
+API -> Cache : get("orders_list")
+alt Cache Hit
+  API -> Operator : return data from cache
+else Cache Miss
+  API -> DB : SELECT * FROM orders
+  API -> Cache : put("orders_list", result)
+  API -> Operator : return data from DB
+end
+
+== Обновление статуса ==
+Operator -> API : POST /orders/{id}/status?=newStatus
+API -> DB : UPDATE orders SET status='...' WHERE id=...
+API -> Cache : invalidate("orders_list")
+API -> Operator : status updated
+
+@enduml
